@@ -36,9 +36,7 @@ function get_version {
             version="${major}.${minor}.${patch}"
         fi
     else
-        if [ ${is_change} = true ]; then
-            patch=$((patch + 1))
-        fi
+        patch=$((patch + 1))
         version="${major}.${minor}.${patch}.dev${commit_count}+d${current_hash}"
     fi
     echo ${version}
