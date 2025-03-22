@@ -42,5 +42,6 @@ function get_version {
     echo ${version}
 }
 
+#
 version=$(get_version)
 echo ${version}
