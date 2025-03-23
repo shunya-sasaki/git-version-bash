@@ -42,6 +42,30 @@ function get_version {
     echo ${version}
 }
 
-#
+function release {
+    current_branch=$(git rev-parse --abbrev-ref HEAD)
+    if [ ${current_branch} != "main" ]; then
+        echo "ERROR: You must be on the main branch!"
+        exit 1
+    fi
+    last_tag=$(git describe --tags --abbrev=0)
+    commit_message=$(git log -1 --pretty=%B)
+    if [[ ${commit_message} == "Release ${last_tag}" ]]; then
+        echo "ERROR: You have already released the latest version!"
+        exit 1
+    fi
+    commit_count=$(git rev-list ${last_tag}..HEAD --count)
+    if [ ${commit_count} -ne 0 ]; then
+        echo "ERROR: There are some changes from the last tag!"
+        echo "Please tag the last commit before release!"
+        exit 1
+    fi
+    git tag -d ${last_tag}
+    git commit --allow-empty -m "Release ${last_tag}"
+    git tag -a ${last_tag} -m "Release ${last_tag}"
+    git push origin --tags
+    git push origin main
+}
+
 version=$(get_version)
-echo ${version}
+release
